@@ -14,7 +14,8 @@ if (process.env.VERCEL) {
 
 const db = 'GeoLite2-City';
 
-let url = `https://raw.githubusercontent.com/GitSquared/node-geolite2-redist/master/redist/${db}.tar.gz`;
+// let url = `https://raw.githubusercontent.com/GitSquared/node-geolite2-redist/master/redist/${db}.tar.gz`;
+let url = `https://cdn.jsdelivr.net/npm/geolite2-city@1.0.6/GeoLite2-City.mmdb.gz`;
 
 if (process.env.MAXMIND_LICENSE_KEY) {
   url =
