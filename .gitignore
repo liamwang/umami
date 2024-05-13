@@ -16,7 +16,8 @@ node_modules
 # production
 /build
 /public/script.js
-/geo
+/geo/*
+!/geo/*.tar.gz
 /dist
 
 # misc
@@ -37,6 +38,7 @@ yarn-error.log*
 .env
 .env.*
 *.env.*
+!.env.example
 
 *.dev.yml
 

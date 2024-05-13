@@ -14,8 +14,7 @@ if (process.env.VERCEL) {
 
 const db = 'GeoLite2-City';
 
-// let url = `https://raw.githubusercontent.com/GitSquared/node-geolite2-redist/master/redist/${db}.tar.gz`;
-let url = `https://cdn.jsdelivr.net/npm/geolite2-city@1.0.6/GeoLite2-City.mmdb.gz`;
+let url = `https://raw.githubusercontent.com/GitSquared/node-geolite2-redist/master/redist/${db}.tar.gz`;
 
 if (process.env.MAXMIND_LICENSE_KEY) {
   url =
@@ -24,10 +23,12 @@ if (process.env.MAXMIND_LICENSE_KEY) {
 }
 
 const dest = path.resolve(__dirname, '../geo');
-
 if (!fs.existsSync(dest)) {
   fs.mkdirSync(dest);
 }
+
+const zipfile = path.join(dest, `${db}.tar.gz`);
+const filename = path.join(dest, `${db}.mmdb`);
 
 const download = url =>
   new Promise(resolve => {
@@ -36,23 +37,27 @@ const download = url =>
     });
   });
 
-download(url).then(
-  res =>
-    new Promise((resolve, reject) => {
-      res.on('entry', entry => {
-        if (entry.path.endsWith('.mmdb')) {
-          const filename = path.join(dest, path.basename(entry.path));
-          entry.pipe(fs.createWriteStream(filename));
+const extract = stream =>
+  new Promise((resolve, reject) => {
+    stream.on('entry', entry => {
+      if (entry.path.endsWith('.mmdb')) {
+        entry.pipe(fs.createWriteStream(filename));
+        console.log('Saved geo database:', filename);
+      }
+    });
+    stream.on('error', e => {
+      reject(e);
+    });
+    stream.on('finish', () => {
+      resolve();
+    });
+  });
 
-          console.log('Saved geo database:', filename);
-        }
-      });
-
-      res.on('error', e => {
-        reject(e);
-      });
-      res.on('finish', () => {
-        resolve();
-      });
-    }),
-);
+if (fs.existsSync(path.join(dest, `${db}.mmdb`))) {
+  console.log('Geo database file already exists. Skipping geo setup.');
+} else if (fs.existsSync(zipfile)) {
+  console.log('Geo database zip file already exists. Skipping download.');
+  extract(fs.createReadStream(zipfile).pipe(zlib.createGunzip({})).pipe(tar.t()));
+} else {
+  download(url).then(res => extract(res));
+}
