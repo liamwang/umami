@@ -1,24 +1,23 @@
 import { ReactNode, useMemo, useState } from 'react';
 import { Loading, Icon, Text, SearchField } from 'react-basics';
 import classNames from 'classnames';
-import ErrorMessage from 'components/common/ErrorMessage';
-import LinkButton from 'components/common/LinkButton';
-import { DEFAULT_ANIMATION_DURATION } from 'lib/constants';
-import { percentFilter } from 'lib/filters';
+import ErrorMessage from '@/components/common/ErrorMessage';
+import LinkButton from '@/components/common/LinkButton';
+import { DEFAULT_ANIMATION_DURATION } from '@/lib/constants';
+import { percentFilter } from '@/lib/filters';
 import {
   useNavigation,
   useWebsiteMetrics,
   useMessages,
   useLocale,
   useFormat,
-} from 'components/hooks';
-import Icons from 'components/icons';
+} from '@/components/hooks';
+import Icons from '@/components/icons';
 import ListTable, { ListTableProps } from './ListTable';
 import styles from './MetricsTable.module.css';
 
 export interface MetricsTableProps extends ListTableProps {
   websiteId: string;
-  domainName: string;
   type?: string;
   className?: string;
   dataFilter?: (data: any) => any;
@@ -27,6 +26,9 @@ export interface MetricsTableProps extends ListTableProps {
   onDataLoad?: (data: any) => void;
   onSearch?: (search: string) => void;
   allowSearch?: boolean;
+  searchFormattedValues?: boolean;
+  showMore?: boolean;
+  params?: { [key: string]: any };
   children?: ReactNode;
 }
 
@@ -39,6 +41,9 @@ export function MetricsTable({
   onDataLoad,
   delay = null,
   allowSearch = false,
+  searchFormattedValues = false,
+  showMore = true,
+  params,
   children,
   ...props
 }: MetricsTableProps) {
@@ -48,10 +53,14 @@ export function MetricsTable({
   const { formatMessage, labels } = useMessages();
   const { dir } = useLocale();
 
-  const { data, isLoading, isFetched, error } = useWebsiteMetrics(websiteId, type, limit, {
-    retryDelay: delay || DEFAULT_ANIMATION_DURATION,
-    onDataLoad,
-  });
+  const { data, isLoading, isFetched, error } = useWebsiteMetrics(
+    websiteId,
+    { type, limit, search: searchFormattedValues ? undefined : search, ...params },
+    {
+      retryDelay: delay || DEFAULT_ANIMATION_DURATION,
+      onDataLoad,
+    },
+  );
 
   const filteredData = useMemo(() => {
     if (data) {
@@ -63,8 +72,16 @@ export function MetricsTable({
             return filter(arr);
           }, items);
         } else {
-          items = dataFilter(data);
+          items = dataFilter(items);
         }
+      }
+
+      if (searchFormattedValues && search) {
+        items = items.filter(({ x, ...data }) => {
+          const value = formatValue(x, type, data);
+
+          return value?.toLowerCase().includes(search.toLowerCase());
+        });
       }
 
       items = percentFilter(items);
@@ -94,7 +111,7 @@ export function MetricsTable({
       )}
       {!data && isLoading && !isFetched && <Loading icon="dots" />}
       <div className={styles.footer}>
-        {data && !error && limit && (
+        {showMore && data && !error && limit && (
           <LinkButton href={renderUrl({ view: type })} variant="quiet">
             <Text>{formatMessage(labels.more)}</Text>
             <Icon size="sm" rotate={dir === 'rtl' ? 180 : 0}>

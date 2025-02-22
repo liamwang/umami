@@ -1,8 +1,8 @@
-import { WebsiteContext } from 'app/(main)/websites/[websiteId]/WebsiteProvider';
-import Breadcrumb from 'components/common/Breadcrumb';
-import { useMessages } from 'components/hooks';
-import Icons from 'components/icons';
-import PageHeader from 'components/layout/PageHeader';
+import { WebsiteContext } from '@/app/(main)/websites/[websiteId]/WebsiteProvider';
+import Breadcrumb from '@/components/common/Breadcrumb';
+import { useMessages } from '@/components/hooks';
+import Icons from '@/components/icons';
+import PageHeader from '@/components/layout/PageHeader';
 import Link from 'next/link';
 import { Key, useContext, useState } from 'react';
 import { Button, Icon, Item, Tabs, Text, useToasts } from 'react-basics';
@@ -13,11 +13,9 @@ import WebsiteEditForm from './WebsiteEditForm';
 
 export function WebsiteSettings({
   websiteId,
-  hostUrl,
   openExternal = false,
 }: {
   websiteId: string;
-  hostUrl?: string;
   openExternal?: boolean;
 }) {
   const website = useContext(WebsiteContext);
@@ -62,8 +60,8 @@ export function WebsiteSettings({
         <Item key="data">{formatMessage(labels.data)}</Item>
       </Tabs>
       {tab === 'details' && <WebsiteEditForm websiteId={websiteId} onSave={handleSave} />}
-      {tab === 'tracking' && <TrackingCode websiteId={websiteId} hostUrl={hostUrl} />}
-      {tab === 'share' && <ShareUrl websiteId={websiteId} hostUrl={hostUrl} onSave={handleSave} />}
+      {tab === 'tracking' && <TrackingCode websiteId={websiteId} />}
+      {tab === 'share' && <ShareUrl onSave={handleSave} />}
       {tab === 'data' && <WebsiteData websiteId={websiteId} onSave={handleSave} />}
     </>
   );

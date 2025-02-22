@@ -20,9 +20,10 @@ export const DEFAULT_DATE_RANGE = '24hour';
 export const DEFAULT_WEBSITE_LIMIT = 10;
 export const DEFAULT_RESET_DATE = '2000-01-01';
 export const DEFAULT_PAGE_SIZE = 10;
+export const DEFAULT_DATE_COMPARE = 'prev';
 
 export const REALTIME_RANGE = 30;
-export const REALTIME_INTERVAL = 5000;
+export const REALTIME_INTERVAL = 10000;
 
 export const FILTER_COMBINED = 'filter-combined';
 export const FILTER_RAW = 'filter-raw';
@@ -30,8 +31,9 @@ export const FILTER_DAY = 'filter-day';
 export const FILTER_RANGE = 'filter-range';
 export const FILTER_REFERRERS = 'filter-referrers';
 export const FILTER_PAGES = 'filter-pages';
+
 export const UNIT_TYPES = ['year', 'month', 'hour', 'day', 'minute'];
-export const EVENT_COLUMNS = ['url', 'referrer', 'title', 'query', 'event'];
+export const EVENT_COLUMNS = ['url', 'entry', 'exit', 'referrer', 'title', 'query', 'event', 'tag'];
 
 export const SESSION_COLUMNS = [
   'browser',
@@ -42,11 +44,15 @@ export const SESSION_COLUMNS = [
   'country',
   'region',
   'city',
+  'host',
 ];
 
 export const FILTER_COLUMNS = {
   url: 'url_path',
+  entry: 'url_path',
+  exit: 'url_path',
   referrer: 'referrer_domain',
+  host: 'hostname',
   title: 'page_title',
   query: 'url_query',
   os: 'os',
@@ -57,6 +63,7 @@ export const FILTER_COLUMNS = {
   city: 'city',
   language: 'language',
   event: 'event_name',
+  tag: 'tag',
 };
 
 export const COLLECTION_TYPE = {
@@ -111,9 +118,12 @@ export const DATA_TYPES = {
 
 export const REPORT_TYPES = {
   funnel: 'funnel',
+  goals: 'goals',
   insights: 'insights',
   retention: 'retention',
   utm: 'utm',
+  journey: 'journey',
+  revenue: 'revenue',
 } as const;
 
 export const REPORT_PARAMETERS = {
@@ -142,6 +152,8 @@ export const PERMISSIONS = {
   websiteCreate: 'website:create',
   websiteUpdate: 'website:update',
   websiteDelete: 'website:delete',
+  websiteTransferToTeam: 'website:transfer-to-team',
+  websiteTransferToUser: 'website:transfer-to-user',
   teamCreate: 'team:create',
   teamUpdate: 'team:update',
   teamDelete: 'team:delete',
@@ -162,12 +174,15 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.websiteCreate,
     PERMISSIONS.websiteUpdate,
     PERMISSIONS.websiteDelete,
+    PERMISSIONS.websiteTransferToTeam,
+    PERMISSIONS.websiteTransferToUser,
   ],
   [ROLES.teamManager]: [
     PERMISSIONS.teamUpdate,
     PERMISSIONS.websiteCreate,
     PERMISSIONS.websiteUpdate,
     PERMISSIONS.websiteDelete,
+    PERMISSIONS.websiteTransferToTeam,
   ],
   [ROLES.teamMember]: [
     PERMISSIONS.websiteCreate,
@@ -224,13 +239,8 @@ export const CHART_COLORS = [
 ];
 
 export const DOMAIN_REGEX =
-  /^(localhost(:[1-9]\d{0,4})?|((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9-]+(-[a-z0-9-]+)*\.)+(xn--)?[a-z0-9-]{2,63})$/;
+  /^(localhost(:[1-9]\d{0,4})?|((?=[a-z0-9-_]{1,63}\.)(xn--)?[a-z0-9-_]+(-[a-z0-9-_]+)*\.)+(xn--)?[a-z0-9-_]{2,63})$/;
 export const SHARE_ID_REGEX = /^[a-zA-Z0-9]{8,16}$/;
-export const UUID_REGEX =
-  /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
-export const HOSTNAME_REGEX =
-  /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9])$/;
-export const IP_REGEX = /^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/;
 export const DATETIME_REGEX =
   /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{3}(Z|\+[0-9]{2}:[0-9]{2})?)?$/;
 
@@ -296,7 +306,7 @@ export const BROWSERS = {
   instagram: 'Instagram',
   ios: 'iOS',
   'ios-webview': 'iOS (webview)',
-  kakaotalk: 'KaKaoTalk',
+  kakaotalk: 'KakaoTalk',
   miui: 'MIUI',
   opera: 'Opera',
   'opera-mini': 'Opera Mini',
@@ -307,6 +317,104 @@ export const BROWSERS = {
   searchbot: 'Searchbot',
   yandexbrowser: 'Yandex',
 };
+
+export const IP_ADDRESS_HEADERS = [
+  'cf-connecting-ip',
+  'x-client-ip',
+  'x-forwarded-for',
+  'do-connecting-ip',
+  'fastly-client-ip',
+  'true-client-ip',
+  'x-real-ip',
+  'x-cluster-client-ip',
+  'x-forwarded',
+  'forwarded',
+  'x-appengine-user-ip',
+];
+
+export const SOCIAL_DOMAINS = [
+  'facebook.com',
+  'fb.com',
+  'instagram.com',
+  'ig.com',
+  'twitter.com',
+  't.co',
+  'x.com',
+  'linkedin.',
+  'tiktok.',
+  'reddit.',
+  'threads.net',
+  'bsky.app',
+  'news.ycombinator.com',
+  'snapchat.',
+  'pinterest.',
+];
+
+export const SEARCH_DOMAINS = [
+  'google.',
+  'bing.com',
+  'msn.com',
+  'duckduckgo.com',
+  'search.brave.com',
+  'yandex.',
+  'baidu.com',
+  'ecosia.org',
+  'chatgpt.com',
+  'perplexity.ai',
+];
+
+export const SHOPPING_DOMAINS = [
+  'amazon.',
+  'ebay.com',
+  'walmart.com',
+  'alibab.com',
+  'aliexpress.com',
+  'etsy.com',
+  'bestbuy.com',
+  'target.com',
+  'newegg.com',
+];
+
+export const EMAIL_DOMAINS = [
+  'gmail.',
+  'mail.yahoo.',
+  'outlook.',
+  'hotmail.',
+  'protonmail.',
+  'proton.me',
+];
+
+export const VIDEO_DOMAINS = ['youtube.', 'twitch.'];
+
+export const PAID_AD_PARAMS = [
+  'utm_source=google',
+  'gclid=',
+  'fbclid=',
+  'msclkid=',
+  'dclid=',
+  'twclid=',
+  'li_fat_id=',
+  'epik=',
+  'ttclid=',
+  'scid=',
+];
+
+export const GROUPED_DOMAINS = [
+  { name: 'Google', domain: 'google.com', match: 'google.' },
+  { name: 'Facebook', domain: 'facebook.com', match: 'facebook.' },
+  { name: 'Reddit', domain: 'reddit.com', match: 'reddit.' },
+  { name: 'LinkedIn', domain: 'linkedin.com', match: 'linkedin.' },
+  { name: 'GitHub', domain: 'github.com', match: 'github.' },
+  { name: 'Hacker News', domain: 'news.ycombinator.com', match: 'news.ycombinator.com' },
+  { name: 'Bing', domain: 'bing.com', match: 'bing.' },
+  { name: 'Brave', domain: 'brave.com', match: 'brave.' },
+  { name: 'DuckDuckGo', domain: 'duckduckgo.com', match: 'duckduckgo.' },
+  { name: 'Twitter', domain: 'twitter.com', match: ['twitter.', 't.co', 'x.com'] },
+  { name: 'Instagram', domain: 'instagram.com', match: ['instagram.', 'ig.com'] },
+  { name: 'Snapchat', domain: 'snapchat.com', match: 'snapchat.' },
+  { name: 'Pinterest', domain: 'pinterest.com', match: 'pinterest.' },
+  { name: 'ChatGPT', domain: 'chatgpt.com', match: 'chatgpt.' },
+];
 
 export const MAP_FILE = '/datamaps.world.json';
 

@@ -1,17 +1,17 @@
-import DateFilter from 'components/input/DateFilter';
+import DateFilter from '@/components/input/DateFilter';
 import { Button, Flexbox } from 'react-basics';
-import { useDateRange, useMessages } from 'components/hooks';
-import { DEFAULT_DATE_RANGE } from 'lib/constants';
-import { DateRange } from 'lib/types';
+import { useDateRange, useMessages } from '@/components/hooks';
+import { DEFAULT_DATE_RANGE } from '@/lib/constants';
+import { DateRange } from '@/lib/types';
 import styles from './DateRangeSetting.module.css';
 
 export function DateRangeSetting() {
   const { formatMessage, labels } = useMessages();
-  const [dateRange, setDateRange] = useDateRange();
+  const { dateRange, saveDateRange } = useDateRange();
   const { value } = dateRange;
 
-  const handleChange = (value: string | DateRange) => setDateRange(value);
-  const handleReset = () => setDateRange(DEFAULT_DATE_RANGE);
+  const handleChange = (value: string | DateRange) => saveDateRange(value);
+  const handleReset = () => saveDateRange(DEFAULT_DATE_RANGE);
 
   return (
     <Flexbox gap={10} width={300}>

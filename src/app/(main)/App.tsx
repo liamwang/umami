@@ -2,7 +2,7 @@
 import { Loading } from 'react-basics';
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
-import { useLogin, useConfig } from 'components/hooks';
+import { useLogin, useConfig } from '@/components/hooks';
 import UpdateNotice from './UpdateNotice';
 
 export function App({ children }) {
@@ -22,12 +22,16 @@ export function App({ children }) {
     return null;
   }
 
+  if (config.uiDisabled) {
+    return null;
+  }
+
   return (
     <>
       {children}
       <UpdateNotice user={user} config={config} />
       {process.env.NODE_ENV === 'production' && !pathname.includes('/share/') && (
-        <Script src={`${process.env.basePath}/telemetry.js`} />
+        <Script src={`${process.env.basePath || ''}/telemetry.js`} />
       )}
     </>
   );

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
-import WebsitesTable from 'app/(main)/settings/websites/WebsitesTable';
-import DataTable from 'components/common/DataTable';
-import { useWebsites } from 'components/hooks';
+import WebsitesTable from '@/app/(main)/settings/websites/WebsitesTable';
+import DataTable from '@/components/common/DataTable';
+import { useWebsites } from '@/components/hooks';
 
 export function WebsitesDataTable({
   teamId,
@@ -19,7 +19,7 @@ export function WebsitesDataTable({
   const queryResult = useWebsites({ teamId });
 
   return (
-    <DataTable queryResult={queryResult}>
+    <DataTable queryResult={queryResult} renderEmpty={() => children}>
       {({ data }) => (
         <WebsitesTable
           teamId={teamId}
@@ -27,9 +27,7 @@ export function WebsitesDataTable({
           showActions={showActions}
           allowEdit={allowEdit}
           allowView={allowView}
-        >
-          {children}
-        </WebsitesTable>
+        />
       )}
     </DataTable>
   );

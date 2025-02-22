@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { useMessages } from 'components/hooks';
+import { useMessages } from '@/components/hooks';
 import {
   Icon,
   Form,
@@ -12,7 +12,7 @@ import {
   TextField,
   Button,
 } from 'react-basics';
-import Icons from 'components/icons';
+import Icons from '@/components/icons';
 import FunnelStepAddForm from './FunnelStepAddForm';
 import { ReportContext } from '../[reportId]/Report';
 import BaseParameters from '../[reportId]/BaseParameters';
@@ -93,12 +93,10 @@ export function FunnelParameters() {
               <PopupTrigger key={index}>
                 <ParameterList.Item
                   className={styles.item}
+                  icon={step.type === 'url' ? <Icons.Eye /> : <Icons.Bolt />}
                   onRemove={() => handleRemoveStep(index)}
                 >
                   <div className={styles.value}>
-                    <div className={styles.type}>
-                      <Icon>{step.type === 'url' ? <Icons.Eye /> : <Icons.Bolt />}</Icon>
-                    </div>
                     <div>{step.value}</div>
                   </div>
                 </ParameterList.Item>

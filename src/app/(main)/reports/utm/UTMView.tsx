@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import { firstBy } from 'thenby';
 import { ReportContext } from '../[reportId]/Report';
-import { CHART_COLORS, UTM_PARAMS } from 'lib/constants';
-import PieChart from 'components/charts/PieChart';
-import ListTable from 'components/metrics/ListTable';
+import { CHART_COLORS, UTM_PARAMS } from '@/lib/constants';
+import PieChart from '@/components/charts/PieChart';
+import ListTable from '@/components/metrics/ListTable';
 import styles from './UTMView.module.css';
-import { useMessages } from 'components/hooks';
+import { useMessages } from '@/components/hooks';
 
 function toArray(data: { [key: string]: number } = {}) {
   return Object.keys(data)
@@ -34,6 +34,7 @@ export default function UTMView() {
             {
               data: items.map(({ value }) => value),
               backgroundColor: CHART_COLORS,
+              borderWidth: 0,
             },
           ],
         };
